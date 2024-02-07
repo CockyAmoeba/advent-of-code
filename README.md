@@ -24,7 +24,7 @@ cargo install cargo-nextest cargo-generate cargo-watch aoc-cli bacon
 
 ## Just
 
-Just is a command runner and provided a lightweight interface to predefined and dynamically configured commands for testing, templatised bootsrapping, benchmarking, downloading AoC inputs and puzzle markdown etc.
+[Just][justfile] is a command runner and provided a lightweight interface to predefined and dynamically configured commands for testing, templatised bootsrapping, benchmarking, downloading AoC inputs and puzzle markdown etc.
 
 ```shell
 brew install just
@@ -57,3 +57,4 @@ cargo install cargo-nextest
 [cargo-nextest]: https://nexte.st/
 [cargo-nextest-execution-model]: https://nexte.st/book/how-it-works.html
 [nextest-bench]: https://nexte.st/book/benchmarks.html
+[justfile]: https://github.com/casey/just
