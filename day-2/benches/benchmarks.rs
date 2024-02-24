@@ -1,4 +1,4 @@
-use day_1::*;
+use day_2::*;
 
 fn main() {
     // Run registered benchmarks.
@@ -22,16 +22,16 @@ fn part1_nom() {
 }
 
 #[divan::bench]
-fn part2() {
-    part2::process(divan::black_box(include_str!(
-        "../input2.txt",
+fn part1_struct() {
+    part1_struct::process(divan::black_box(include_str!(
+        "../input1.txt",
     )))
     .unwrap();
 }
 
 #[divan::bench]
-fn part2_nom() {
-    part2_nom::process(divan::black_box(include_str!(
+fn part2() {
+    part2::process(divan::black_box(include_str!(
         "../input2.txt",
     )))
     .unwrap();
