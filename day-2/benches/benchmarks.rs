@@ -36,3 +36,19 @@ fn part2() {
     )))
     .unwrap();
 }
+
+#[divan::bench]
+fn part2_nom() {
+    part2_nom::process(divan::black_box(include_str!(
+        "../input2.txt",
+    )))
+    .unwrap();
+}
+
+#[divan::bench]
+fn part2_struct() {
+    part2_struct::process(divan::black_box(include_str!(
+        "../input2.txt",
+    )))
+    .unwrap();
+}
