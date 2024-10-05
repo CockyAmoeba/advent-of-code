@@ -24,15 +24,15 @@ fn parse_schematic(input: &str) -> miette::Result<EngineSchematic, AocError> {
         symbols: HashSet::new(),
     };
     for (idx, line) in input.lines().enumerate() {
-        let (_, nums) = many0(delimited(many0(satisfy(|c| !c.is_numeric())), digit1::<_,(&str, ErrorKind)>, many0(satisfy(|c| !c.is_numeric()))))(line).unwrap();
-        let mut skip = 0;
+        let (_, nums) = many0(delimited(many0(satisfy(|c| !c.is_ascii_digit())), digit1::<_,(&str, ErrorKind)>, many0(satisfy(|c| !c.is_ascii_digit()))))(line).unwrap();
+        let mut processed_idx = 0;
         for num in nums.iter() {
-            let loc = line[skip..].find(num).unwrap() as i64;
-            engine_schematic.part_numbers.push(PartNumber::new(idx as i64, loc + skip as i64, num));
-            skip += loc as usize;
+            let loc = line[processed_idx..].find(num).unwrap() as i64;
+            engine_schematic.part_numbers.push(PartNumber::new(idx as i64, loc + processed_idx as i64, num));
+            processed_idx += 1+loc as usize;
         }
         for (i, c) in line.chars().enumerate() {
-            if !c.is_numeric() && c != '.' {
+            if !c.is_ascii_digit() && c != '.' {
                 engine_schematic.symbols.insert((idx as i64, i as i64));
             }
         }            
@@ -56,6 +56,7 @@ impl PartNumber {
             (row - 1, col),
             (row + 1, col), // above and below
             (row - 1, col + 1),
+            (row, col + 1),
             (row + 1, col + 1), // right hand side
         ]);
         for adj_col_index in 1..part_number.len() {
@@ -63,12 +64,11 @@ impl PartNumber {
             .extend(
                 [
                     (row - 1, col + 1 + adj_col_index as i64), 
+                    (row, col + 1 + adj_col_index as i64), 
                     (row + 1, col + 1 + adj_col_index as i64),
                 ]
             );
         }
-        points.extend(
-            [(row, col + 1 + (part_number.len() as i64) - 1)]);
         match part_number.parse::<i64>() {
             Ok(value) => Self {
                 value,
@@ -106,7 +106,7 @@ mod tests {
 
     #[rstest] 
     #[case("......755.+844", vec!["755", "844"], vec![6, 11])]
-    #[case("467..114..", vec!["467", "114"], vec![0, 5])]
+    #[case("467..114..467", vec!["467", "114", "467"], vec![0, 5, 10])]
     #[case("...*......", vec![], vec![])]
     #[case("..35..633.", vec!["35", "633"], vec![2, 6])]
     #[case("......#...", vec![], vec![])]
@@ -122,8 +122,10 @@ mod tests {
         for (i, exp_val) in expected.iter().enumerate() {
             assert_eq!(result.1[i], *exp_val);
         }
+        let mut skip = 0;
         for (i, loc) in location.iter().enumerate() {
-            assert_eq!(input.find(result.1[i]).unwrap() as i32, *loc);
+            assert_eq!(input[skip..].find(result.1[i]).unwrap() as i32 + skip as i32, *loc);
+            skip += 1+*loc as usize;
         }
     }
 
@@ -158,18 +160,20 @@ mod tests {
             (-1, 0),
             (1, 0),
             (-1, 1),
+            (0, 1),
             (1, 1),
             (-1, 2),
+            (0, 2),
             (1, 2),
             (-1, 3),
-            (1, 3),
             (0, 3),
+            (1, 3),
         ]);
         let diff: HashSet<_> = pn.adj_points.difference(&expected).collect();
         assert_eq!(diff, [].iter().collect());
         let diff2: HashSet<_> = expected.difference(&pn.adj_points).collect();
         assert_eq!(diff2, [].iter().collect());
-        assert_eq!(pn.adj_points.len(), 12);
+        assert_eq!(pn.adj_points.len(), 14);
 
         Ok(())
     }
@@ -251,7 +255,7 @@ mod tests {
             .map(PartNumber::extract_value)
             .sum::<i64>();
 
-        // assert_eq!(10304, result);
+        assert_eq!(10303, result);
 
         Ok(())
     }
