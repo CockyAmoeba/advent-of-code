@@ -49,7 +49,7 @@ mod tests {
     #[rstest] 
     #[case("Game 1: 3 blue, 4 red; 1 red, 2 green, 6 blue; 2 green", true)]
     #[case("Game 3: 8 green, 6 blue, 20 red; 5 blue, 4 red, 13 green; 5 green, 1 red", false)]
-    fn test_validate_singel_game(#[case] input: &str, #[case] expected: bool) -> miette::Result<(), nom::Err<nom::error::Error<&'static str>>> {
+    fn test_validate_single_game(#[case] input: &str, #[case] expected: bool) -> miette::Result<(), nom::Err<nom::error::Error<&'static str>>> {
         let draws = parse_game(input);
         let result = draws.iter().all(|draw| draw[0] <= 12 && draw[1] <= 13 && draw[2] <= 14);
         assert_eq!(expected, result);
